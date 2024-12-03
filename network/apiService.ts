@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { useStore } from 'zustand';
-const BASE_URL="http://localhost:3000"
-//const BASE_URL="http://192.168.0.247:3000"
+//const BASE_URL="http://localhost:3000"
+const BASE_URL="http://192.168.0.247:3000"
 const PROPERTY = "/properties"
 const PROFILE = "/profile"
-const BOOKING = "bookings"
+const BOOKING = "/bookings"
 
 
 
@@ -32,6 +32,9 @@ export const addPropertyToApi = async (newProperty: any) => {
   const response = await api.post(BOOKING, newProperty);
   return response.data;
 };
+
+
+
 
 
 

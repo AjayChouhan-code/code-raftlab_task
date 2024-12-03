@@ -15,20 +15,24 @@ const NoDataView: React.FC<NoDataViewProps> = ({
 }) => {
   return (
     <View style={styles.container}>
+      <View style={styles.imgViewStyle}>
       <Image
         source={imageSource}
         style={styles.imgStyles} // Adjust the size as needed
         resizeMode="contain"
       />
       <Text style={styles.textStyle}>{message}</Text>
+      </View>
     </View>
   );
 };
 
 const styles=StyleSheet.create({
-    container:tw`justify-center items-center `,
+    container:tw` flex justify-center items-center `,
     imgStyles:tw`w-40 h-40 mb-4`,
-    textStyle:tw`text-gray-600 text-base text-center`
+    textStyle:tw`text-gray-600 text-base text-center`,
+    imgViewStyle:tw`flex-1  items-center justify-center`
+
 })
 
 export default NoDataView;

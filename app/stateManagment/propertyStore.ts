@@ -22,16 +22,4 @@ export const removePropertyAtom = atom(
   }
 );
 
-// Atom for updating a property by id
-export const updatePropertyAtom = atom(
-  null,
-  (get, set, { id, updatedProperty }: { id: string; updatedProperty: Partial<Property> }) => {
-    const currentProperties = get(propertiesAtom);
-    set(
-      propertiesAtom,
-      currentProperties.map((property) =>
-        property.id === id ? { ...property, ...updatedProperty } : property
-      )
-    );
-  }
-);
+

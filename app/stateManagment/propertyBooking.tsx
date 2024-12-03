@@ -1,11 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-interface Property {
-  id: string; 
-  [key: string]: any; 
-}
 
 // Define the state and actions
 interface PropertyStore {
@@ -13,25 +8,31 @@ interface PropertyStore {
   isError: boolean;
   error: string | null;
   properties: Property[];
-  profile: null, 
+  propertyList: Property[];
+  bookingList: Property[];
+  profile: Profile|null,
 
   addProperty: (property: Property) => void;
   setProfile: (profile: Profile) => void;
-  removeProperty: (id: string) => void; // or number if `id` is a number
-  updateProperty: (id: string, updatedProperty: Partial<Property>) => void;
+  setProperttBookingList:(bookingList: Property[]) => void;
+  setPropertyList: (propertyList: Property[]) => void;
+  removeProperty: (id: string) => void; 
 }
 
 
 const usePropertyStore = create<PropertyStore>((set) => ({
   properties: [],
-  profile:null,
   isLoading:false,
   isError:false,
   error:null,
+  propertyList:[],
+  profile: null,
+  bookingList:[],
   
+
   addProperty: (property) =>
     set((state) => ({
-      properties: [...state.properties, property],
+      propertyList: [...state.propertyList, property],
     })),
   
 
@@ -41,18 +42,15 @@ const usePropertyStore = create<PropertyStore>((set) => ({
     })),
   
     
-  updateProperty: (id, updatedProperty) =>
-    set((state) => ({
-      properties: state.properties.map((property) =>
-        property.id === id ? { ...property, ...updatedProperty } : property
-      ),
+  setPropertyList: (properties) =>
+    set(() => ({
+      propertyList:properties,
+    })),
 
-    }),
-    {
-      name: 'property-store',
-      getStorage: () => AsyncStorage, // Use AsyncStorage for React Native
-    }
-  ),
+   setProperttBookingList: (property) =>
+      set((state) => ({
+        bookingList: property,
+      })),
 
   setProfile: (profile:any) =>
     set(() => ({

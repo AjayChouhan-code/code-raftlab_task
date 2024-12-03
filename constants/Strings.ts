@@ -1,7 +1,7 @@
 export default {
   booking:"Booking",
   home:"Home",
-  proile:"Proiile",
+  proile:"Profile",
   add_property:"Book Property",
   property_booked_successully:"Property booked succeully",
   success:"success",
@@ -12,5 +12,7 @@ export default {
   no_data_avialable:"No data available",
   booking_detail:"Booking Detail",
   name:"Name",
-  email:"Email"
+  email:"Email",
+  property_alredy_added:"Property already added",
+  features:"Features"
 };

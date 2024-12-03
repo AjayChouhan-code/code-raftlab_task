@@ -9,26 +9,38 @@ import {
   Dimensions
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import { useAtom } from "jotai";
 import tw from "twrnc";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Location from "expo-location";
 import Toast from "react-native-toast-message";
 import Carousel from "react-native-reanimated-carousel";
+import { useFocusEffect } from "@react-navigation/native";
+import { useQuery } from "@tanstack/react-query";
 
 import { Colors } from "@/constants/Colors";
 import CustomButton from "@/components/customButton/_layout";
-import { addPropertyAtom } from "../stateManagment/propertyStore";
 import Strings from "@/constants/Strings";
 import Header from "@/components/header/_layout";
-import { addPropertyToApi } from "../../network/apiService";
+import { addPropertyToApi, fetchBooking } from "../../network/apiService";
+
 
 const width=Dimensions.get('window').width
 
 const PropertyDetail: React.FC = () => {
+ 
+
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ["bookings"],
+    queryFn: fetchBooking,
+    staleTime: 0, // Consider data stale immediately
+    refetchInterval: false,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+  });
+
+
   const router = useRouter();
   const item = useLocalSearchParams();
-  
   let obj;
   if (typeof item?.obj === "string") {
     obj = JSON.parse(item?.obj);
@@ -37,38 +49,47 @@ const PropertyDetail: React.FC = () => {
     obj = null; // or handle accordingly
   }
 
-  const requestPermission = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      alert("Permission to access location was denied");
-    }
-  };
 
-  useEffect(() => {
-    requestPermission();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch(); // Refetch data every time the page gains focus
+    }, [refetch])
+  );
 
-  const regionData = {
-    latitude: obj?.coordinates?.latitude,
-    longitude: obj?.coordinates?.longitude,
-    latitudeDelta: obj?.coordinates?.latitude,
-    longitudeDelta: obj?.coordinates?.longitude,
-  };
+
+  // Map View  regionData
+  // const regionData = {
+  //   latitude: obj?.coordinates?.latitude,
+  //   longitude: obj?.coordinates?.longitude,
+  //   latitudeDelta: obj?.coordinates?.latitude,
+  //   longitudeDelta: obj?.coordinates?.longitude,
+  // };
+
 
   const bookProperty = async () => {
     try {
+    let findObj = data.find((e:any)=>e.id==obj.id)
+    if(!findObj){
       const response = await addPropertyToApi(obj);
-      showMsg();
+      showMsg( Strings.success,Strings.property_booked_successully,);
+    }else{
+      showMsg(Strings.error,Strings.property_alredy_added,)
+    }
     } catch (error) {
       console.error("Failed to add property:", error);
     }
   };
 
-  const showMsg = () => {
+  const showMsg = (type:string,msg:string) => {
     Toast.show({
-      type: Strings.success,
-      text1: Strings.property_booked_successully,
+      type: type,
+      text1:msg,
     });
+if(type==Strings.success){
+   setTimeout(()=>{
+    router.back()
+   },300)
+}
   };
 
   return (
@@ -124,7 +145,7 @@ const PropertyDetail: React.FC = () => {
           {obj?.price}
         </Text>
 
-        <Text style={styles.priceStyle}>Features</Text>
+        <Text style={styles.priceStyle}>{Strings.features}{" :-"}</Text>
         {obj?.features?.map((e: any, index: number) => {
           return (
             <View
